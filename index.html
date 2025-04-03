@@ -14,31 +14,59 @@
   <!-- Original HubSpot Embedding-Code -->
   <script charset="utf-8" type="text/javascript" src="//js-eu1.hsforms.net/forms/embed/v2.js"></script>
   <script>
+    // URL-Slug extrahieren (vor dem Laden des Formulars)
+    const path = window.location.pathname;
+    const slug = path.split('/').filter(Boolean).pop() || 'test-slug';
+    console.log("Extrahierter Slug:", slug);
+    
+    // Beim Laden der Seite
     document.addEventListener('DOMContentLoaded', function() {
       hbspt.forms.create({
         region: "eu1",
         portalId: "26459032",
         formId: "c744833f-5a18-42bb-bcef-849296aa33b0",
-        target: "#form-container",  // Hier das Ziel-Element angeben
+        target: "#form-container",
+        
         onFormReady: function($form) {
           console.log("Formular wurde geladen");
           
-          // URL-Slug extrahieren
-          const path = window.location.pathname;
-          const slug = path.split('/').filter(Boolean).pop() || '';
-          console.log("Extrahierter Slug:", slug);
-          
-          // Warten Sie kurz, um sicherzustellen, dass alle Formularelemente geladen sind
+          // Nach einer kurzen Pause versuchen, das Feld zu finden und zu befüllen
           setTimeout(function() {
-            // Überprüfen, ob das Hidden Field existiert
-            const hiddenField = $form.find('input[name="kurs_slug"]');
-            if (hiddenField.length) {
-              hiddenField.val(slug);
-              console.log("Hidden Field aktualisiert mit:", slug);
+            console.log("Versuche, das Feld 'kurs_slug' zu finden...");
+            
+            // Bei normalen Feldern, alle Eingabefelder durchsuchen
+            const allInputs = $form.find('input, select, textarea');
+            console.log("Alle Eingabefelder im Formular:", allInputs.length);
+            
+            // DEBUG: Alle Eingabefelder auflisten
+            allInputs.each(function() {
+              console.log("Feld gefunden:", $(this).attr('name'), "Typ:", $(this).attr('type'));
+            });
+            
+            // Versuche, das Feld zu finden und zu befüllen
+            const field = $form.find('input[name="kurs_slug"]');
+            if (field.length) {
+              field.val(slug);
+              console.log("Feld 'kurs_slug' gefunden und mit Wert befüllt:", slug);
             } else {
-              console.log("Hinweis: Hidden Field 'kurs_slug' nicht gefunden. Stellen Sie sicher, dass es in HubSpot existiert.");
+              // Alternativ können wir nach Labels suchen
+              $form.find('label').each(function() {
+                const labelText = $(this).text().toLowerCase();
+                if (labelText.includes('kurs') || labelText.includes('slug')) {
+                  const inputId = $(this).attr('for');
+                  if (inputId) {
+                    const input = $form.find('#' + inputId);
+                    if (input.length) {
+                      input.val(slug);
+                      console.log("Feld über Label gefunden und befüllt:", labelText);
+                    }
+                  }
+                }
+              });
+              
+              console.log("Hinweis: Konnte kein Feld mit dem Namen 'kurs_slug' finden");
             }
-          }, 500);
+          }, 1000);
         }
       });
     });
