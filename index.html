@@ -4,52 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HubSpot Formular Test</title>
-  <!-- HubSpot-Script vor dem Hauptskript laden -->
-  <script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/v2.js"></script>
 </head>
 <body>
   <h1>Formular-Test-Bildungsprodukt</h1>
+  
+  <!-- Hier wird das Formular erscheinen -->
   <div id="form-container"></div>
   
+  <!-- Original HubSpot Embedding-Code -->
+  <script charset="utf-8" type="text/javascript" src="//js-eu1.hsforms.net/forms/embed/v2.js"></script>
   <script>
-    // Script erst ausführen, wenn DOM vollständig geladen ist
     document.addEventListener('DOMContentLoaded', function() {
-      // Sicherstellen, dass hbspt bereits existiert
-      if (typeof hbspt !== 'undefined') {
-        loadForm();
-      } else {
-        // Wenn hbspt noch nicht geladen ist, warten wir ein wenig
-        setTimeout(loadForm, 1000);
-      }
-      
-      function loadForm() {
-        hbspt.forms.create({
-          region: "eu1",
-          portalId: "26459032",
-          formId: "1hXz2FoX5QwWG6_fIJBP0lwfr3x4",
-          target: "#form-container",
-          onFormReady: function($form) {
-            // URL-Slug extrahieren
-            const path = window.location.pathname;
-            const slug = path.split('/').filter(Boolean).pop() || '';
-            console.log("Extrahierter Slug:", slug);
-            
-            // Mit Verzögerung das Hidden Field aktualisieren
-            setTimeout(function() {
-              const hiddenField = $form.find('input[name="kurs_slug"]');
-              if (hiddenField.length) {
-                hiddenField.val(slug);
-                console.log("Hidden Field aktualisiert mit:", slug);
-              } else {
-                console.error("Hidden Field 'kurs_slug' nicht gefunden!");
-              }
-            }, 500);
-          },
-          onFormSubmit: function($form) {
-            console.log("Formular wurde abgeschickt");
-          }
-        });
-      }
+      hbspt.forms.create({
+        region: "eu1",
+        portalId: "26459032",
+        formId: "857cf616-85f9-4305-86eb-f7c82413f497",
+        target: "#form-container",  // Hier das Ziel-Element angeben
+        onFormReady: function($form) {
+          console.log("Formular wurde geladen");
+          
+          // URL-Slug extrahieren
+          const path = window.location.pathname;
+          const slug = path.split('/').filter(Boolean).pop() || '';
+          console.log("Extrahierter Slug:", slug);
+          
+          // Warten Sie kurz, um sicherzustellen, dass alle Formularelemente geladen sind
+          setTimeout(function() {
+            // Überprüfen, ob das Hidden Field existiert
+            const hiddenField = $form.find('input[name="kurs_slug"]');
+            if (hiddenField.length) {
+              hiddenField.val(slug);
+              console.log("Hidden Field aktualisiert mit:", slug);
+            } else {
+              console.log("Hinweis: Hidden Field 'kurs_slug' nicht gefunden. Stellen Sie sicher, dass es in HubSpot existiert.");
+            }
+          }, 500);
+        }
+      });
     });
   </script>
 </body>
