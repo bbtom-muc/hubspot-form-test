@@ -6,7 +6,7 @@
   <title>HubSpot Formular Test</title>
 </head>
 <body>
-  <h1>Formular-Test-Bildungsprodukt 2</h1>
+  <h1>Formular-Test-Bildungsprodukt 3</h1>
   
   <!-- Hier wird das Formular erscheinen -->
   <div id="form-container"></div>
@@ -14,23 +14,13 @@
   <!-- HubSpot Embedding-Code -->
   <script charset="utf-8" type="text/javascript" src="//js-eu1.hsforms.net/forms/embed/v2.js"></script>
   <script>
+    // URL-Slug extrahieren
+    const path = window.location.pathname;
+    const slug = path.split('/').filter(Boolean).pop() || 'default-slug';
+    console.log("Extrahierter Slug:", slug);
+    
     document.addEventListener('DOMContentLoaded', function() {
-      // Alle möglichen Feldnamen ausprobieren
-      const fieldValues = {
-        // Versuchen wir verschiedene mögliche Feldnamen
-        'kurs_slug': 'bildungsprodukt',
-        'bildungsprodukt': 'bildungsprodukt',
-        'kurs': 'bildungsprodukt',
-        'produkt': 'bildungsprodukt',
-        'course': 'bildungsprodukt',
-        'slug': 'bildungsprodukt',
-        'produkt_name': 'bildungsprodukt',
-        'produkt_id': 'bildungsprodukt',
-        'kurs_id': 'bildungsprodukt',
-        'email': 'test@example.com' // manchmal hilft es, ein bekanntes Feld zu befüllen
-      };
-      
-      // Formular mit vorbefüllten Feldern erstellen
+      // Formular mit vorbefülltem kurs_slug erstellen
       hbspt.forms.create({
         region: "eu1",
         portalId: "26459032",
@@ -38,19 +28,25 @@
         target: "#form-container",
         
         // Vorbefüllung über die offizielle HubSpot API
-        prefillFields: fieldValues,
+        // Wir nutzen den exakten Feldnamen aus dem Screenshot
+        prefillFields: {
+          'kurs_slug': slug
+        },
         
         onFormReady: function($form) {
           console.log("Formular wurde geladen");
           
-          // Alle im Formular enthaltenen Felder anzeigen (zur Diagnose)
-          console.log("Auflistung aller Felder im Formular:");
-          $form.find('input, select, textarea').each(function() {
-            const name = $(this).attr('name') || 'unnamed';
-            const type = $(this).attr('type') || $(this).prop('tagName');
-            const value = $(this).val() || 'leer';
-            console.log(`Feld: ${name}, Typ: ${type}, Wert: ${value}`);
-          });
+          // Als Backup versuchen wir auch, das Feld direkt zu befüllen
+          setTimeout(function() {
+            // Exakter Selektor basierend auf dem Screenshot
+            const kursSlugField = $form.find('input[name="kurs_slug"]');
+            if (kursSlugField.length) {
+              kursSlugField.val(slug);
+              console.log("kurs_slug-Feld direkt befüllt mit:", slug);
+            } else {
+              console.log("kurs_slug-Feld konnte nicht direkt gefunden werden");
+            }
+          }, 1000);
         }
       });
     });
