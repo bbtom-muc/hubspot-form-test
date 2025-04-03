@@ -6,7 +6,7 @@
   <title>HubSpot Formular Test</title>
 </head>
 <body>
-  <h1>Formular-Test-Bildungsprodukt 1</h1>
+  <h1>Formular-Test-Bildungsprodukt 2</h1>
   
   <!-- Hier wird das Formular erscheinen -->
   <div id="form-container"></div>
@@ -15,27 +15,42 @@
   <script charset="utf-8" type="text/javascript" src="//js-eu1.hsforms.net/forms/embed/v2.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // Alle möglichen Feldnamen ausprobieren
+      const fieldValues = {
+        // Versuchen wir verschiedene mögliche Feldnamen
+        'kurs_slug': 'bildungsprodukt',
+        'bildungsprodukt': 'bildungsprodukt',
+        'kurs': 'bildungsprodukt',
+        'produkt': 'bildungsprodukt',
+        'course': 'bildungsprodukt',
+        'slug': 'bildungsprodukt',
+        'produkt_name': 'bildungsprodukt',
+        'produkt_id': 'bildungsprodukt',
+        'kurs_id': 'bildungsprodukt',
+        'email': 'test@example.com' // manchmal hilft es, ein bekanntes Feld zu befüllen
+      };
+      
+      // Formular mit vorbefüllten Feldern erstellen
       hbspt.forms.create({
         region: "eu1",
         portalId: "26459032",
         formId: "c744833f-5a18-42bb-bcef-849296aa33b0",
         target: "#form-container",
         
+        // Vorbefüllung über die offizielle HubSpot API
+        prefillFields: fieldValues,
+        
         onFormReady: function($form) {
           console.log("Formular wurde geladen");
           
-          // Alle Eingabefelder durchgehen, um sie in der Konsole anzuzeigen
+          // Alle im Formular enthaltenen Felder anzeigen (zur Diagnose)
+          console.log("Auflistung aller Felder im Formular:");
           $form.find('input, select, textarea').each(function() {
-            console.log("Feld gefunden:", $(this).attr('name'), "Typ:", $(this).attr('type'));
+            const name = $(this).attr('name') || 'unnamed';
+            const type = $(this).attr('type') || $(this).prop('tagName');
+            const value = $(this).val() || 'leer';
+            console.log(`Feld: ${name}, Typ: ${type}, Wert: ${value}`);
           });
-          
-          // Wartepause von 500ms, dann "bildungsprodukt" in alle Textfelder schreiben
-          setTimeout(function() {
-            $form.find('input[type="text"]').each(function() {
-              $(this).val("bildungsprodukt");
-              console.log("Feld befüllt:", $(this).attr('name'));
-            });
-          }, 500);
         }
       });
     });
