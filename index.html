@@ -11,15 +11,9 @@
   <!-- Hier wird das Formular erscheinen -->
   <div id="form-container"></div>
   
-  <!-- Original HubSpot Embedding-Code -->
+  <!-- HubSpot Embedding-Code -->
   <script charset="utf-8" type="text/javascript" src="//js-eu1.hsforms.net/forms/embed/v2.js"></script>
   <script>
-    // URL-Slug extrahieren (vor dem Laden des Formulars)
-    const path = window.location.pathname;
-    const slug = path.split('/').filter(Boolean).pop() || 'test-slug';
-    console.log("Extrahierter Slug:", slug);
-    
-    // Beim Laden der Seite
     document.addEventListener('DOMContentLoaded', function() {
       hbspt.forms.create({
         region: "eu1",
@@ -30,43 +24,18 @@
         onFormReady: function($form) {
           console.log("Formular wurde geladen");
           
-          // Nach einer kurzen Pause versuchen, das Feld zu finden und zu befüllen
+          // Alle Eingabefelder durchgehen, um sie in der Konsole anzuzeigen
+          $form.find('input, select, textarea').each(function() {
+            console.log("Feld gefunden:", $(this).attr('name'), "Typ:", $(this).attr('type'));
+          });
+          
+          // Wartepause von 500ms, dann "bildungsprodukt" in alle Textfelder schreiben
           setTimeout(function() {
-            console.log("Versuche, das Feld 'kurs_slug' zu finden...");
-            
-            // Bei normalen Feldern, alle Eingabefelder durchsuchen
-            const allInputs = $form.find('input, select, textarea');
-            console.log("Alle Eingabefelder im Formular:", allInputs.length);
-            
-            // DEBUG: Alle Eingabefelder auflisten
-            allInputs.each(function() {
-              console.log("Feld gefunden:", $(this).attr('name'), "Typ:", $(this).attr('type'));
+            $form.find('input[type="text"]').each(function() {
+              $(this).val("bildungsprodukt");
+              console.log("Feld befüllt:", $(this).attr('name'));
             });
-            
-            // Versuche, das Feld zu finden und zu befüllen
-            const field = $form.find('input[name="kurs_slug"]');
-            if (field.length) {
-              field.val(slug);
-              console.log("Feld 'kurs_slug' gefunden und mit Wert befüllt:", slug);
-            } else {
-              // Alternativ können wir nach Labels suchen
-              $form.find('label').each(function() {
-                const labelText = $(this).text().toLowerCase();
-                if (labelText.includes('kurs') || labelText.includes('slug')) {
-                  const inputId = $(this).attr('for');
-                  if (inputId) {
-                    const input = $form.find('#' + inputId);
-                    if (input.length) {
-                      input.val(slug);
-                      console.log("Feld über Label gefunden und befüllt:", labelText);
-                    }
-                  }
-                }
-              });
-              
-              console.log("Hinweis: Konnte kein Feld mit dem Namen 'kurs_slug' finden");
-            }
-          }, 1000);
+          }, 500);
         }
       });
     });
